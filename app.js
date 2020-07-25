@@ -45,8 +45,18 @@ function initialPrompts() {
 }
 
 function artistSearch() {
-    console.log('searching artist');
-    initialPrompts();
+    inquirer.prompt([{
+        message: 'Which artist are you looking for?',
+        name: 'artist'
+    }]).then(answer => {
+        connection.query('SELECT position, artist, song, year FROM top5000 WHERE ?',
+            {artist: answer.artist},
+            (err, results) => {
+            if(err) throw err;
+            console.table(results);
+            initialPrompts();
+        })
+    });
 }
 
 function multiSearch() {
