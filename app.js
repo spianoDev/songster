@@ -65,8 +65,24 @@ function multiSearch() {
 }
 
 function rangeSearch() {
-    console.log('looking for a range...');
-    initialPrompts();
+    inquirer.prompt([{
+        name: 'begin',
+        type: 'number',
+        message: 'Enter the starting position as a whole number.'
+    },
+        {
+            name: 'end',
+            type: 'number',
+            message: 'Enter the end position as a whole number.'
+        }]).then(selections => {
+            connection.query('SELECT position, artist, song, year FROM top5000 WHERE position BETWEEN ? AND ?',
+                [selections.begin, selections.end],
+                (err, results) => {
+                if (err) throw err;
+                console.table(results);
+                    initialPrompts();
+                })
+    })
 }
 
 function songSearch() {
