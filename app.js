@@ -60,8 +60,12 @@ function artistSearch() {
 }
 
 function multiSearch() {
-    console.log('look who showed up again!');
-    initialPrompts();
+    connection.query('SELECT artist, count(*) as countNum FROM top5000 GROUP BY artist HAVING countNum > 5 ORDER BY' +
+        ' countNum DESC', (err, values) => {
+        if(err) throw err;
+        console.table(values);
+        initialPrompts();
+    })
 }
 
 function rangeSearch() {
@@ -86,6 +90,16 @@ function rangeSearch() {
 }
 
 function songSearch() {
-    console.log('Here is the song you are looking for!');
-    initialPrompts();
+    inquirer.prompt([{
+        message: 'Which song are you looking for?',
+        name: 'song'
+    }]).then(tune => {
+        connection.query(`SELECT position, artist, song, year FROM top5000 WHERE song LIKE "%${tune.song}%"`
+        , (err, songTitle) => {
+            if(err) throw err;
+            console.table(songTitle);
+            initialPrompts();
+        })
+    });
+
 }
